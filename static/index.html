@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta name="naver-site-verification" content="49b1adc8f91b59dd7de0f65d2d9bf03485e54383" />
+  <meta name="description" content="한국 인구수 추이와 연도별 인구통계, 출생률·고령화 데이터 등 다양한 인구 정보를 한눈에 확인하세요.">
+  <meta property="og:title" content="한국 인구수 추이 계산">
+  <meta property="og:description" content="2025년 이후 인구수 변화, 중장기 인구통계 등 다양한 정보를 제공합니다.">
+  <meta property="og:image" content="https://www.kpopulation.kr/static/favicon.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>한국 인구수 추이 계산</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: #f8f8f8;
+      font-family: 'Pretendard', Arial, sans-serif;
+      margin: 0;
+    }
+    #main-container, .container {
+      max-width: 98vw;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px #ccc;
+      padding: 3vw 2vw;
+    }
+
+    /* 제목(타이틀) 크게, 여백 주기 */
+    h1 {
+      font-size: 2em;
+      margin: 1.2em 0 1em 0;
+      font-weight: bold;
+      letter-spacing: -1px;
+      text-align: center;
+    }
+
+    /* 컨트롤 영역 */
+    #controls {
+      width: 100%;
+      margin: 0 auto 1.2em auto;
+    }
+
+    /* 두 입력창 한 줄에 배치 */
+    .form-row {
+      display: flex;
+      flex-direction: row;
+      gap: 1em;
+      margin-bottom: 0.7em;
+    }
+    .input-half {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .input-half label {
+      font-size: 1em;
+      font-weight: 500;
+      margin-bottom: 0.3em;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+    }
+    .input-half input[type="number"] {
+      font-size: 1em;
+      padding: 0.6em 0.7em;
+      border: 1px solid #bfc2ca;
+      border-radius: 8px;
+      margin-bottom: 0.2em;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* 예측하기 버튼 */
+    button, .btn {
+      font-size: 1.15em;
+      font-weight: 600;
+      padding: 0.8em 0;
+      background: #4073d7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      margin-top: 0.6em;
+      margin-bottom: 1.2em;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    #chart-container {
+      min-height: 340px;
+      height: 380px;    /* PC에서는 좀 더 크게 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* ...기존 스타일 유지 */
+    }
+    #yearChart {
+      width: 100% !important;
+      height: 340px !important;   /* 높이 고정 */
+      max-height: 420px;
+      min-height: 240px;
+      display: block;
+      margin: 0 auto;
+    }
+    @media (max-width: 700px) {
+      #chart-container {
+        min-height: 220px;
+        height: 220px;
+      }
+      #yearChart {
+        height: 220px !important;
+        min-height: 140px;
+        max-height: 300px;
+      }
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    /* 표 반응형 */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+    }
+    th, td {
+      padding: 0.7em 0.2em;
+      font-size: 1em;
+      text-align: center;
+      min-width: 72px;
+    }
+    th {
+      background: #336699;
+      color: #fff;
+      font-size: 1.07em;
+    }
+    tr:nth-child(even) {
+      background: #f4f8fd;
+    }
+    tr:nth-child(odd) {
+      background: #fff;
+    }
+
+    /* 모바일 최적화 */
+    @media (max-width: 700px) {
+      #main-container, .container {
+        padding: 1vw 0.2vw;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      h1 {
+        font-size: 1.6em;
+        margin: 0.8em 0 0.6em 0;
+      }
+      th, td {
+        font-size: 0.98em;
+        min-width: 60px;
+      }
+    }
+    /* 입력창만 모바일에서 세로 정렬 */
+    @media (max-width: 350px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0.3em;
+      }
+    }
+
+
+    </style>
+    
+    
+</head>
+<body>
+  <div class="container">
+    <h1>한국 인구수 추이 계산하기</h1>
+    <div id="controls">
+  <div class="form-row">
+    <div class="input-half">
+      <label for="tfr-input"><span class="icon">👶</span> 출산율 (TFR)</label>
+      <input type="number" id="tfr-input" value="0.7" step="0.01" min="0.3" max="3.0" />
+    </div>
+    <div class="input-half">
+      <label for="lifeexp-input"><span class="icon">⏳</span> 기대수명</label>
+      <input type="number" id="lifeexp-input" value="90" step="1" min="50" max="120" />
+    </div>
+  </div>
+  <button id="apply-btn">예측하기</button>
+</div>
+
+    <div id="chart-container">
+      <canvas id="yearChart"></canvas>
+    </div>
+
+    <table id="populationTable" aria-label="년도별 인구 예측 결과">
+      <thead>
+        <tr>
+          <th>연도</th>
+          <th>총 인구수 (명)</th>
+          <th>증감분</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="baseInfo" role="contentinfo" aria-live="polite">
+      <strong>기준 정보</strong>
+      • 기준 연도: <span id="baseYearDisplay">2025</span><br />
+      • 기준 인구 (KOSIS 기준): <span id="basePopulation">51,750,000명</span><br />
+      • 남녀 성비: 남자 <span id="maleRatio">49.2%</span> / 여자 <span id="femaleRatio">50.8%</span><br />
+      • 출처: 통계청 국가통계포털(KOSIS) API (기준 인구 및 출산율은 KOSIS 2024년 예측 기준)<br />
+      • 본 시뮬레이션은 가임기 여성 인구(15세 ~ 49세)를 기반으로 출산율을 적용하며,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;출산율 계산식: 가임기 여성 인구 × (출산율 / 35) × 성비 (여자 48.8%, 남자 51.2%)<br />
+      • 기대수명을 초과한 인구는 자연 감소하는 모델입니다.
+    </div>
+  </div>
+
+  <script>
+    // KOSIS API 정보
+    const KOSIS_API_KEY = "M2NiMzJmOTJiZjQ5NzkxNDBjZTkyOTQzOTJiNWUxZTQ=";
+    const BASE_URL = "/kosis_proxy";
+    const baseYear = 2025;
+
+    // 0~100세 + 100세 이상 라벨
+    const ageLabels = [];
+    for(let i=0; i<=100; i++) ageLabels.push(`${i}세`);
+    ageLabels.push("100세 이상");
+
+    async function fetchPopulationBySex(year) {
+      const url = `${BASE_URL}?method=getList&apiKey=${KOSIS_API_KEY}` +
+        `&itmId=T10+&objL1=1+&objL2=ALL+&objL3=ALL+` +
+        `&objL4=&objL5=&objL6=&objL7=&objL8=` +
+        `&format=json&jsonVD=Y&prdSe=Y&startPrdDe=${year}&endPrdDe=${year}&orgId=101&tblId=DT_1BPA001`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const females = ageLabels.map(label => {
+        const found = data.find(row =>
+          row.C2_NM === "여자" && row.PRD_DE === String(year) && row.C3_NM === label
+        );
+        return found ? Number(found.DT) : 0;
+      });
+      const males = ageLabels.map(label => {
+        const found = data.find(row =>
+          row.C2_NM === "남자" && row.PRD_DE === String(year) && row.C3_NM === label
+        );
+        return found ? Number(found.DT) : 0;
+      });
+      return {ageLabels, females, males};
+    }
+
+    // 생존율 적용한 시뮬레이션 함수 (기대수명 이상 점진적 감소)
+    function simulateYear(males, females, tfr, lifeExp) {
+      const n = males.length;
+      const nextFemales = Array(n).fill(0);
+      const nextMales = Array(n).fill(0);
+      const survivalRate = 0.9; // 기대수명 이상 인구 90% 생존 가정
+
+      for(let age = n-1; age > 0; age--) {
+        if(age === n-1) { // 100세 이상
+          nextFemales[age] = Math.round(females[age] * survivalRate);
+          nextMales[age] = Math.round(males[age] * survivalRate);
+        } else {
+          if(age >= lifeExp) {
+            nextFemales[age] = Math.round(females[age - 1] * survivalRate);
+            nextMales[age] = Math.round(males[age - 1] * survivalRate);
+          } else {
+            nextFemales[age] = females[age - 1];
+            nextMales[age] = males[age - 1];
+          }
+        }
+      }
+
+      // 가임기 여성(15~49세)
+      let fertileFemale = 0;
+      for(let age=15; age<=49; age++) fertileFemale += females[age];
+
+      // 신생아 수
+      const totalBabies = fertileFemale * (tfr / 35);
+      nextFemales[0] = Math.round(totalBabies * 0.488);
+      nextMales[0] = Math.round(totalBabies * 0.512);
+
+      return {nextFemales, nextMales};
+    }
+
+    let yearChart;
+    function updateYearChart(years, populations) {
+      if(yearChart) yearChart.destroy();
+      yearChart = new Chart(document.getElementById('yearChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [{
+            label: "연도별 전체 인구 (명)",
+            data: populations,
+            backgroundColor: 'rgba(41,128,185,0.85)',
+            borderColor: 'rgba(41,128,185,1)',
+            borderWidth: 1,
+            borderRadius: 4,
+            barPercentage: 0.6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,  
+          scales: {
+            x: {
+              ticks: {
+                // 예: 5개 단위로만 연도 표기
+                callback: function(value, index, values) {
+                  // 연도 5개 단위만 표시
+                  if (index % 5 === 0) {
+                    return this.getLabelForValue(value);
+                  }
+                  return '';
+                },
+                font: {
+                  size: 7 // 폰트 크기 줄이기
+                }
+              }
+            },
+            y: {
+              ticks: {
+                callback: function(value, index, values) {
+                  // 1000만 단위(혹은 1천만, 2천만 등만 표기)
+                  if (value % 10000000 === 0) {
+                    return value / 10000 + '만';
+                  }
+                  return '';
+                },
+                font: {
+                  size: 5
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                font: { size: 10 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updatePopulationTable(years, populations, females, males, baseYear) {
+      const tbody = document.querySelector("#populationTable tbody");
+      tbody.innerHTML = "";
+
+      for(let i=0; i<years.length; i++) {
+        const tr = document.createElement("tr");
+
+        // 배경색 조건 - 연도 끝자리가 0 또는 5일 경우
+        const yearStr = String(years[i]);
+        if(yearStr.endsWith("0") || yearStr.endsWith("5")) {
+          tr.style.backgroundColor = "#D4F4FA";  // 연한 파란색 배경
+        }
+
+        // 연도
+        const tdYear = document.createElement("td");
+        tdYear.textContent = years[i];
+        tdYear.style.border = "1px solid #ddd";
+        tdYear.style.padding = "8px";
+        tr.appendChild(tdYear);
+
+        // 총 인구수
+        const tdPop = document.createElement("td");
+        tdPop.textContent = populations[i].toLocaleString();
+        tdPop.style.border = "1px solid #ddd";
+        tdPop.style.padding = "8px";
+        tr.appendChild(tdPop);
+
+        // 증감분
+        const tdDiff = document.createElement("td");
+        tdDiff.style.border = "1px solid #ddd";
+        tdDiff.style.padding = "8px";
+
+        if(i === 0) {
+          tdDiff.textContent = "(기준연도)";
+          tdDiff.style.color = "gray";
+        } else {
+          const diff = populations[i] - populations[i - 1];
+          const diffPercent = (diff / populations[i - 1]) * 100;
+          if(isNaN(diffPercent)) {
+            tdDiff.textContent = "(기준연도)";
+            tdDiff.style.color = "gray";
+          } else {
+            const arrow = diff > 0 ? "+" : "";
+            const color = diff > 0 ? "red" : "blue";
+            tdDiff.innerHTML = `<span style="color:${color}; font-weight: 600;">${arrow}${diff.toLocaleString()}명 (${Math.abs(diffPercent).toFixed(2)}%)</span>`;
+          }
+        }
+        tr.appendChild(tdDiff);
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function runSimulationAndRender() {
+      document.getElementById('apply-btn').disabled = true;
+      document.getElementById('apply-btn').innerText = "계산중...";
+
+      try {
+        const tfr = parseFloat(document.getElementById('tfr-input').value);
+        const lifeExp = parseInt(document.getElementById('lifeexp-input').value);
+        const { females, males } = await fetchPopulationBySex(baseYear);
+
+        const basePopulation = females.reduce((a,b) => a + b, 0) + males.reduce((a,b) => a + b, 0);
+        document.getElementById('basePopulation').innerText = basePopulation.toLocaleString() + "명";
+
+        const startYear = 2026, endYear = 2075;
+        const years = [baseYear];
+        const populations = [basePopulation];
+
+        let currentFemales = females.slice();
+        let currentMales = males.slice();
+
+        for(let year = startYear; year <= endYear; year++) {
+          const { nextFemales, nextMales } = simulateYear(currentMales, currentFemales, tfr, lifeExp);
+          const total = nextFemales.reduce((a,b) => a + b, 0) + nextMales.reduce((a,b) => a + b, 0);
+          years.push(year);
+          populations.push(total);
+          currentFemales = nextFemales;
+          currentMales = nextMales;
+        }
+
+        updateYearChart(years, populations);
+        updatePopulationTable(years, populations, females, males, baseYear);
+
+      } catch(e) {
+        alert("계산 실패: " + e.message);
+      }
+
+      document.getElementById('apply-btn').disabled = false;
+      document.getElementById('apply-btn').innerText = "예측하기";
+    }
+
+    document.getElementById('apply-btn').onclick = runSimulationAndRender;
+    window.addEventListener('DOMContentLoaded', runSimulationAndRender);
+  </script>
+</body>
+</html>
