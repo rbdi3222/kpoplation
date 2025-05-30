@@ -6,6 +6,7 @@ colorama==0.4.6
 decorator==4.4.2
 et_xmlfile==2.0.0
 Flask==3.1.1
+gunicorn==23.0.0
 idna==3.7
 imageio==2.34.2
 imageio-ffmpeg==0.5.1
@@ -15,6 +16,7 @@ MarkupSafe==3.0.2
 moviepy==1.0.3
 numpy==2.0.0
 openpyxl==3.1.5
+packaging==25.0
 pandas==2.2.3
 pillow==10.3.0
 proglog==0.1.10
