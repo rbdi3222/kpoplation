@@ -3,7 +3,7 @@
 <head>
   <meta name="naver-site-verification" content="49b1adc8f91b59dd7de0f65d2d9bf03485e54383" />
   <meta name="description" content="한국 인구수 추이와 연도별 인구통계, 출생률·고령화 데이터 등 다양한 인구 정보를 한눈에 확인하세요.">
-  <meta property="og:title" content="한국 인구수 추이 계산">
+  <meta property="og:title" content="한국 인구수 추이 계산하기">
   <meta property="og:description" content="2025년 이후 인구수 변화, 중장기 인구통계 등 다양한 정보를 제공합니다.">
   <meta property="og:image" content="https://www.kpopulation.kr/static/favicon.png">
   <meta property="og:image:width" content="1200">
@@ -15,6 +15,79 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    #top-bar {
+      width: 100%;
+      max-width: 98vw;
+      margin: 0 auto 16px auto;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 2px 10px #eee;
+      padding: 18px 22px 10px 18px;
+      font-family: 'Pretendard', Arial, sans-serif;
+      min-height: 56px;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .brand-text {
+      color: #1266FF;
+      font-weight: bold;
+      font-size: 1.4em;
+      letter-spacing: -1px;
+      margin-left: 2px;
+    }
+
+    /* 메뉴 버튼을 오른쪽 1/3에 고정, 넓이 33vw */
+    #menu-btn {
+      border: none;
+      background: #fff;
+      font-size: 1.08em;
+      font-weight: 600;
+      padding: 8px 18px 8px 12px;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px #f2f2f2;
+      cursor: pointer;
+      color: #222;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      width: 33vw;
+      min-width: 110px;
+      justify-content: flex-end;
+      transition: background 0.1s;
+      text-align: right;
+    }
+    #menu-btn:hover {
+      background: #F4F8FD;
+    }
+
+    @media (max-width: 700px) {
+      #top-bar {
+        padding: 11px 8px 5px 8px;
+        min-height: 44px;
+        border-radius: 0 0 8px 8px;
+      }
+      .brand-text {
+        font-size: 1.07em;
+      }
+      #menu-btn {
+        font-size: 1em;
+        padding: 6px 12px 6px 7px;
+      }
+    }
     body {
       background: #f8f8f8;
       font-family: 'Pretendard', Arial, sans-serif;
@@ -174,10 +247,17 @@
 
 
     </style>
-    
-    
 </head>
 <body>
+  <div id="top-bar">
+    <a href="#" class="logo" style="text-decoration:none;">
+    <div class="logo">
+      <img width="45" height="45" viewBox="0 0 40 40" src="favicon.png" alt="로고" class="logo-icon" />
+      <span class="brand-text">인구수 추이</span>
+    </div>
+    <button id="menu-btn">메뉴 <span style="font-size:1.35em; margin-left:0.2em;">≡</span></button>
+  </a>
+  </div>
   <div class="container">
     <h1>한국 인구수 추이 계산하기</h1>
     <div id="controls">
