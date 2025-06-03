@@ -17,9 +17,7 @@
   <style>
     #top-bar {
       width: 100%;
-      max-width: 98vw;
       margin: 0 auto 16px auto;
-      display: flex;
       align-items: center;
       background: #fff;
       border-radius: 0 0 16px 16px;
@@ -51,7 +49,8 @@
 
     /* 메뉴 버튼을 오른쪽 1/3에 고정, 넓이 33vw */
     #menu-btn {
-      border: none;
+      margin-left: auto;  
+      text-align: center;
       background: #fff;
       font-size: 1.08em;
       font-weight: 600;
@@ -60,15 +59,11 @@
       box-shadow: 0 1px 4px #f2f2f2;
       cursor: pointer;
       color: #222;
-      display: flex;
       align-items: center;
       gap: 6px;
       margin-left: auto;
-      width: 33vw;
-      min-width: 110px;
+      width: 15vw;
       justify-content: flex-end;
-      transition: background 0.1s;
-      text-align: right;
     }
     #menu-btn:hover {
       background: #F4F8FD;
