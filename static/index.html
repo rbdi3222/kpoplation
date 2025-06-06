@@ -239,6 +239,14 @@
         gap: 0.3em;
       }
     }
+    .pop-summary {
+      text-align: center;
+      font-size: 1.3em;
+      color: #314069;
+      margin-bottom: 20px;  /* 그래프와 간격 */
+      margin-top: 30px;     /* 상단 영역과 간격 */
+      font-weight: 600;
+    }
 
 
     </style>
@@ -267,6 +275,8 @@
     </div>
   </div>
   <button id="apply-btn">예측하기</button>
+<!-- 인구수 문구가 들어갈 곳 -->
+  <div id="year2075-summary" style="margin-top:20px; text-align:center; font-size:1.2em; font-weight:600;"></div>
 </div>
 
     <div id="chart-container">
@@ -475,6 +485,17 @@
         tr.appendChild(tdDiff);
 
         tbody.appendChild(tr);
+      }
+       // 2075년 인구수 문구 삽입 (해당 연도가 있다면)
+      const targetYear = 2075;
+      const idx = years.indexOf(targetYear);
+      const summaryDiv = document.getElementById("year2075-summary");
+
+      if(idx !== -1) {
+        const pop = populations[idx];
+        summaryDiv.innerHTML = `<span style="color:#314069;">${targetYear}년 우리나라 인구수는 <span style="color:#1976D2;">${pop.toLocaleString()}</span>명입니다</span>`;
+      } else {
+        summaryDiv.innerHTML = "";
       }
     }
 
